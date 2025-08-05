@@ -56,7 +56,7 @@ def employee_add_new_skill():
     skill = ESkill.get(skill_id)
     print(skill.name)
     employee.add_skill(skill)
-
+    Employee.dump_data()
     print(employee.get_skills)
 
 #def get_employee_skills()
