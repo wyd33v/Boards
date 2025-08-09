@@ -1,3 +1,9 @@
-.venv
-requirements.txt
-models/__pycache__
+.venv/*
+.vscode/*
+.idea/*
+
+.python-version
+.env
+
+__pycache__/
+data/db.sqlite

@@ -1,23 +1,24 @@
 """
 A file that contains class of Department and everything related.
 """
-import uuid
 
-from models.storage import Storage
+from sqlalchemy import Column, Integer, String
+
+from .base import DBase
 
 
-class Department(Storage):
-    file_path = "./data/departments"
+class Department(DBase):
+    __tablename__ = "departments"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
 
     def __init__(self, department_name):
-        self.id = uuid.uuid4()
         self.name = department_name
-        super().add()
         print("department was created")
 
-    @classmethod
-    def get_all(cls):
-        print(len(cls.storage))
-        return cls.storage.items()
-    
-    
+    def __repr__(self):
+        return f"department {self.id} {self.name}"
+
+    def __str__(self):
+        return f"{self.name}"

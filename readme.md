@@ -4,3 +4,6 @@
 # 3. Install dependencies
 ~~~
 pip install -r requirements.txt
+~~~
+
+[Project TODO board](https://trello.com/b/GGgZzO2P/edu)
