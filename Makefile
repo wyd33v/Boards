@@ -2,7 +2,7 @@ venv:
 	source .venv/bin/activate
 
 run:
-	python main.py
+	fastapi dev app.py
 
 migrate:
 	alembic upgrade head

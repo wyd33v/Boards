@@ -1,12 +1,15 @@
 """
 A file that contains class of Employee and everything related.
 """
+import json
+from unittest import result
+
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import mapped_column, registry, relationship
 
 from models.department import Department
 
-from .base import DBase
+from .base import DBase, db_session
 
 
 class ESkill(DBase):
@@ -26,11 +29,35 @@ class ESkill(DBase):
     def __str__(self):
         return f"{self.name}"
 
-    # @classmethod
-    # def get_all(cls):
-    #     print(len(cls.storage))
-    #     return cls.storage.items()
+    def as_dict(self):
+        dict_model = {
+            "id": self.id,
+            "name": self.name,
+        }
+        return dict_model
 
+    def save(self):
+        db_session.add(self)
+        db_session.commit()
+        return self.id
+
+    def update(self):
+        pass
+
+    def delete(self):
+        pass
+
+    @classmethod
+    def get_all(cls):
+        result = db_session.query(cls).all()
+        return result
+    
+    @classmethod
+    def get_by_id(cls, pk):
+        result = db_session.query(cls).get(pk)
+        return result
+
+    
 class Employee(DBase):
     __tablename__ = "employees"
     
@@ -42,11 +69,11 @@ class Employee(DBase):
     department = relationship("Department", back_populates="employees")
     skills = relationship("ESkill", secondary='employee_skills', back_populates='employees')
 
-    def __init__(self, fname, lname, position, department: Department):
+    def __init__(self, fname, lname, position, department_id):
         self.first_name = fname
         self.last_name = lname
         self.position = position
-        self.department = department
+        self.department_id = department_id
         print("employee was created")
         
     def __repr__(self):
@@ -67,15 +94,21 @@ class Employee(DBase):
     # def check_skill(self, s):
     #     return s in self.skills
 
-
-
-    
-
-
-
 class EmployeeSkills(DBase):
     __tablename__ = "employee_skills"
     
     id = Column(Integer, primary_key=True)
     employee_id = Column(Integer, ForeignKey('employees.id'))
     skill_id = Column(Integer, ForeignKey('eskills.id'))
+
+# registry.map_imperatively(
+#     Department,
+#     "department",
+#     properties={"department": relationship("Child", back_populates="parent")},
+# )
+
+# registry.map_imperatively(
+#     Child,
+#     child_table,
+#     properties={"parent": relationship("Parent", back_populates="children")},
+# )
