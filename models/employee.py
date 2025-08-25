@@ -8,6 +8,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column, registry, relationship
 
 from models.department import Department
+from .schemas import EmployeeSchema, SkillsSchema
 
 from .base import DBase, db_session
 
@@ -41,10 +42,14 @@ class ESkill(DBase):
         db_session.commit()
         return self.id
 
-    def update(self):
-        pass
+    def update(self, skillItem: SkillsSchema):
+        self.name = skillItem.name
+        self.save()
+        return self
 
     def delete(self):
+        db_session.delete(self)
+        db_session.commit()
         pass
 
     @classmethod
@@ -82,6 +87,46 @@ class Employee(DBase):
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.position}"
 
+    def as_dict(self):
+        dict_model = {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "position": self.position,
+            "departmentId": self.department_id,
+            #"department": self.position,    
+            #"skills": self.position,      
+        }
+        return dict_model
+
+    def save(self):
+        db_session.add(self)
+        db_session.commit()
+        return self.id
+
+    def update(self, employee: EmployeeSchema):
+        self.first_name = employee.first_name
+        self.last_name = employee.last_name
+        self.position = employee.position
+        self.department_id = employee.department_id #TODO: Add department checks
+        self.save()
+        return self
+
+    def delete(self):
+        db_session.delete(self)
+        db_session.commit()
+        pass
+
+    @classmethod
+    def get_all(cls):
+        result = db_session.query(cls).all()
+        return result
+    
+    @classmethod
+    def get_by_id(cls, pk):
+        result = db_session.query(cls).get(pk)
+        return result
+    
     # def add_skill(self, skill: ESkill):
     #     self.skills.append(skill)
 
