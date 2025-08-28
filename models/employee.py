@@ -8,7 +8,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column, registry, relationship
 
 from models.department import Department
-from .schemas import EmployeeSchema, SkillsSchema
+from .schemas import EmployeeSchema, SkillSchema
 
 from .base import DBase, db_session
 
@@ -42,7 +42,7 @@ class ESkill(DBase):
         db_session.commit()
         return self.id
 
-    def update(self, skillItem: SkillsSchema):
+    def update(self, skillItem: SkillSchema):
         self.name = skillItem.name
         self.save()
         return self
