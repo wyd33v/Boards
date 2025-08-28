@@ -8,7 +8,8 @@ RUN apt-get update \
     && apt upgrade -y \ 
     && apt install -y python3-pip
 
-COPY * /app/
+#COPY * /app/
+COPY . .
 
 RUN pip install --upgrade pip
 
