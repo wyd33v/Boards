@@ -8,9 +8,9 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column, registry, relationship
 
 from models.department import Department
-from .schemas import EmployeeSchema, SkillSchema
 
 from .base import DBase, db_session
+from .schemas import EmployeeSchema, SkillSchema
 
 
 class ESkill(DBase):
@@ -94,8 +94,8 @@ class Employee(DBase):
             "last_name": self.last_name,
             "position": self.position,
             "departmentId": self.department_id,
-            #"department": self.position,    
-            #"skills": self.position,      
+            "department": self.department,
+            "skills": self.skills,
         }
         return dict_model
 
@@ -127,17 +127,14 @@ class Employee(DBase):
         result = db_session.query(cls).get(pk)
         return result
     
-    # def add_skill(self, skill: ESkill):
-    #     self.skills.append(skill)
+    def add_skill(self, skill: ESkill):
+        self.skills.append(skill)
+        self.save()
+        return self
 
-    # def get_skills(self):
-    #     # skills = []
-    #     # for s in self.skills:
-    #     #     skills.append(s.name)
-    #     return [x.name for x in self.skills]
-
-    # def check_skill(self, s):
-    #     return s in self.skills
+    def check_skill(self, skill: ESkill):
+        return skill in self.skills
+        # return skill_id [x.id for x in self.skills]
 
 class EmployeeSkills(DBase):
     __tablename__ = "employee_skills"
