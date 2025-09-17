@@ -11,7 +11,7 @@ from .schemas import DepartmentSchema
 
 class Department(DBase):
     __tablename__ = "departments"
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(String)
     employees = relationship("Employee", back_populates='department')
@@ -25,7 +25,7 @@ class Department(DBase):
 
     def __str__(self):
         return f"{self.name}"
-    
+
     def as_dict(self):
         dict_model = {
             "id": self.id,
@@ -52,8 +52,12 @@ class Department(DBase):
     def get_all(cls):
         result = db_session.query(cls).all()
         return result
-    
+
     @classmethod
     def get_by_id(cls, pk):
         result = db_session.query(cls).get(pk)
         return result
+
+    @classmethod
+    def get_by_name(cls, name: str):
+        return db_session.query(cls).filter(cls.name == name).one_or_none()

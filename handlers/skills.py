@@ -2,7 +2,7 @@ import json
 
 from fastapi import APIRouter, HTTPException
 
-from models.employee import ESkill
+from models.employee import ESkill, Employee, EmployeeSkills
 from models.schemas import SkillSchema
 
 router = APIRouter(prefix="/skills")
@@ -48,13 +48,37 @@ def delete_skill(pk: int):
     return {"ok": True}
 
 
-@router.post("/{pk}/employee/{employee_pk}", tags=["employee_skill"])
+@router.get("/{pk}/employees", tags=["employee_skill"])
+def get_all_employees_by_skill(pk: int):
+    employees = ESkill.get_employee_by_skill_id(pk)
+
+    return employees
+
+
+@router.post("/{pk}/employees/{employee_pk}", tags=["employee_skill"])
 def skill_add_employee(pk: int, employee_pk: int):
-    # TODO: call class method
-    return {"pk": pk, "employee_pk": employee_pk}
+    skill = ESkill.get_by_id(pk)
+    if skill is None:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    employee = Employee.get_by_id(employee_pk)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    skill.add_employee(employee)
+    return employee.as_dict()
 
 
 @router.delete("/{pk}/employee/{employee_pk}", tags=["employee_skill"])
 def skill_delete_employee(pk: int, employee_pk: int):
-    # TODO: call class method
-    return {"pk": pk, "employee_pk": employee_pk}
+    skill = ESkill.get_by_id(pk)
+    if skill is None:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    employee = Employee.get_by_id(employee_pk)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    if not employee.check_skill(skill):
+        raise HTTPException(
+            status_code=404, detail="There is no employee with this skill")
+
+    skill.delete_employee(employee)
+    return employee.as_dict()
