@@ -1,4 +1,6 @@
 
+from unittest import mock
+
 import pytest
 
 from models.department import Department
@@ -23,10 +25,12 @@ def test_as_dict_fail():
 
 
 def test_save_ok(test_db):
-    # given
-    d = Department(department_name= "test_department")
-    # when
-    result = d.save()
-    # then
-    # assert result is not None
-    assert result > 0
+    with mock.patch("models.department.db_session") as db_session:
+        db_session.return_value = test_db
+        # given
+        d = Department(department_name= "test_department")
+        # when
+        result = d.save()
+        # then
+        db_session.add.assert_called_once()
+        db_session.commit.assert_called_once()
