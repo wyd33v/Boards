@@ -9,7 +9,7 @@ from sqlalchemy.orm import mapped_column, registry, relationship
 
 from models.department import Department
 
-from .base import DBase, db_session
+from .base import DBase, DBSession
 from .schemas import EmployeeSchema, SkillSchema
 
 
@@ -39,8 +39,9 @@ class ESkill(DBase):
         return dict_model
 
     def save(self):
-        db_session.add(self)
-        db_session.commit()
+        with DBSession() as db_session:
+            db_session.add(self)
+            db_session.commit()
         return self.id
 
     def update(self, skillItem: SkillSchema):
@@ -49,9 +50,9 @@ class ESkill(DBase):
         return self
 
     def delete(self):
-        db_session.delete(self)
-        db_session.commit()
-        pass
+        with DBSession() as db_session:
+            db_session.delete(self)
+            db_session.commit()
 
     def add_employee(self, employee: "Employee"):
         self.employees.append(employee)
@@ -65,22 +66,26 @@ class ESkill(DBase):
 
     @classmethod
     def get_employee_by_skill_id(cls, skill_id: int):
-        result = db_session.query(cls).get(skill_id)
-        return result.employees
+        with DBSession() as db_session:
+            result = db_session.query(cls).get(skill_id)
+            return result.employees
 
     @classmethod
     def get_all(cls):
-        result = db_session.query(cls).all()
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).all()
+            return result
 
     @classmethod
     def get_by_id(cls, pk):
-        result = db_session.query(cls).get(pk)
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).get(pk)
+            return result
 
     @classmethod
     def get_by_name(cls, name: str):
-        return db_session.query(cls).filter(cls.name == name).one_or_none()
+        with DBSession() as db_session:
+            return db_session.query(cls).filter(cls.name == name).one_or_none()
 
 
 class Employee(DBase):
@@ -116,8 +121,9 @@ class Employee(DBase):
         return dict_model
 
     def save(self):
-        db_session.add(self)
-        db_session.commit()
+        with DBSession() as db_session:
+            db_session.add(self)
+            db_session.commit()
         return self.id
 
     def update(self, employee: EmployeeSchema):
@@ -127,19 +133,21 @@ class Employee(DBase):
         return self
 
     def delete(self):
-        db_session.delete(self)
-        db_session.commit()
-        pass
+        with DBSession() as db_session:
+            db_session.delete(self)
+            db_session.commit()
 
     @classmethod
     def get_all(cls):
-        result = db_session.query(cls).all()
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).all()
+            return result
 
     @classmethod
     def get_by_id(cls, pk):
-        result = db_session.query(cls).get(pk)
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).get(pk)
+            return result
 
     def add_skill(self, skill: ESkill):
         self.skills.append(skill)
@@ -166,7 +174,6 @@ class Employee(DBase):
 
     def check_skill(self, skill: ESkill) -> bool:
         return skill in self.skills
-        # return skill_id [x.id for x in self.skills]
 
 
 class EmployeeSkills(DBase):

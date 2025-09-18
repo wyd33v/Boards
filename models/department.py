@@ -5,7 +5,7 @@ A file that contains class of Department and everything related.
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from .base import DBase, db_session
+from .base import DBase, DBSession
 from .schemas import DepartmentSchema
 
 
@@ -34,8 +34,9 @@ class Department(DBase):
         return dict_model
 
     def save(self):
-        db_session.add(self)
-        db_session.commit()
+        with DBSession() as db_session:
+            db_session.add(self)
+            db_session.commit()
         return self.id
 
     def update(self, department: DepartmentSchema):
@@ -44,20 +45,24 @@ class Department(DBase):
         return self
 
     def delete(self):
-        db_session.delete(self)
-        db_session.commit()
+        with DBSession() as db_session:
+            db_session.delete(self)
+            db_session.commit()
         pass
 
     @classmethod
     def get_all(cls):
-        result = db_session.query(cls).all()
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).all()
+            return result
 
     @classmethod
     def get_by_id(cls, pk):
-        result = db_session.query(cls).get(pk)
-        return result
+        with DBSession() as db_session:
+            result = db_session.query(cls).get(pk)
+            return result
 
     @classmethod
     def get_by_name(cls, name: str):
-        return db_session.query(cls).filter(cls.name == name).one_or_none()
+        with DBSession() as db_session:
+            return db_session.query(cls).filter(cls.name == name).one_or_none()
