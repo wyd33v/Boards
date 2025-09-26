@@ -62,8 +62,10 @@ def test_add_skill(test_db):
     skill_name = 'testing skill'
     e = Employee(fname='testname', lname='testlast')
     s = ESkill(skill_name=skill_name)
-    # when
     s.save()
+    e_id = e.save()
+    # when
+    e = e.get_by_id(e_id)
     e.add_skill(s)
     # then
     assert e.id > 0

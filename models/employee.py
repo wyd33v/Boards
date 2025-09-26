@@ -18,8 +18,7 @@ class ESkill(DBase):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    employees = relationship(
-        "Employee", secondary='employee_skills', back_populates='skills')
+    employees = relationship("Employee", secondary='employee_skills', back_populates='skills')
 
     def __init__(self, skill_name):
         self.name = skill_name
@@ -95,9 +94,8 @@ class Employee(DBase):
     first_name = Column(String)
     last_name = Column(String)
     department_id = mapped_column(ForeignKey("departments.id"))
-    department = relationship("Department", back_populates="employees")
-    skills = relationship(
-        "ESkill", secondary='employee_skills', back_populates='employees')
+    department = relationship("Department", back_populates="employees", lazy="subquery")
+    skills = relationship("ESkill", secondary='employee_skills', lazy='immediate')
 
     def __init__(self, fname, lname):
         self.first_name = fname
@@ -116,7 +114,7 @@ class Employee(DBase):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "department": self.department,
-            "skills": self.skills,
+            "skills": [s.as_dict() for s in self.skills],
         }
         return dict_model
 
@@ -140,8 +138,7 @@ class Employee(DBase):
     @classmethod
     def get_all(cls):
         with DBSession() as db_session:
-            result = db_session.query(cls).all()
-            return result
+            return db_session.query(cls).all()
 
     @classmethod
     def get_by_id(cls, pk):
@@ -183,24 +180,10 @@ class EmployeeSkills(DBase):
     employee_id = Column(Integer, ForeignKey('employees.id'))
     skill_id = Column(Integer, ForeignKey('eskills.id'))
 
-    # def delete_skill(self, skill: ESkill):
-    #     self.skills.delete(skill)
-    #     self.save()
-    #     return self
 
-    # def add_skill(self, skill: ESkill):
-    #     self.skills.append(skill)
-    #     self.save()
-    #     return self
+# class EmployeeDepartment(DBase):
+#     __tablename__ = "employee_department"
 
-# registry.map_imperatively(
-#     Department,
-#     "department",
-#     properties={"department": relationship("Child", back_populates="parent")},
-# )
-
-# registry.map_imperatively(
-#     Child,
-#     child_table,
-#     properties={"parent": relationship("Parent", back_populates="children")},
-# )
+#     id = Column(Integer, primary_key=True)
+#     employee_id = Column(Integer, ForeignKey('employees.id'))
+#     department_id = Column(Integer, ForeignKey('departments.id'))
