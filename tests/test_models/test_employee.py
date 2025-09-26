@@ -57,14 +57,15 @@ def test_delete_ok(test_db):
     find_id = Employee.get_by_id(prev_id)
     assert find_id is None
 
-# def test_add_skill(test_db):
-#     # given
-#     e = Employee(fname='testname', lname='testlast')
-#     s = ESkill(skill_name='testing skill')
-#     # when
-#     prev_id = e.save()
-#     s.save()
-#     e.add_skill(s)
-#     # then
-#     assert 1==1
-    # assert any(skill.skill_name == "testing skill" for skill in e.skills)
+def test_add_skill(test_db):
+    # given
+    skill_name = 'testing skill'
+    e = Employee(fname='testname', lname='testlast')
+    s = ESkill(skill_name=skill_name)
+    # when
+    s.save()
+    e.add_skill(s)
+    # then
+    assert e.id > 0
+    assert len(e.skills) > 0
+    assert e.skills[0].name == skill_name
