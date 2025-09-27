@@ -41,12 +41,11 @@ class ESkill(DBase):
         with DBSession() as db_session:
             db_session.add(self)
             db_session.commit()
-        return self.id
+            return self.id
 
     def update(self, skillItem: SkillSchema):
         self.name = skillItem.name
         self.save()
-        return self
 
     def delete(self):
         with DBSession() as db_session:
@@ -56,30 +55,25 @@ class ESkill(DBase):
     def add_employee(self, employee: "Employee"):
         self.employees.append(employee)
         self.save()
-        return self
 
     def delete_employee(self, employee: "Employee"):
         self.employees.remove(employee)
         self.save()
-        return self
 
     @classmethod
     def get_employee_by_skill_id(cls, skill_id: int):
         with DBSession() as db_session:
-            result = db_session.query(cls).get(skill_id)
-            return result.employees
+            return db_session.query(cls).get(skill_id)
 
     @classmethod
     def get_all(cls):
         with DBSession() as db_session:
-            result = db_session.query(cls).all()
-            return result
+            return db_session.query(cls).all()
 
     @classmethod
     def get_by_id(cls, pk):
         with DBSession() as db_session:
-            result = db_session.query(cls).get(pk)
-            return result
+            return db_session.query(cls).get(pk)
 
     @classmethod
     def get_by_name(cls, name: str):
@@ -122,13 +116,12 @@ class Employee(DBase):
         with DBSession() as db_session:
             db_session.add(self)
             db_session.commit()
-        return self.id
+            return self.id
 
     def update(self, employee: EmployeeSchema):
         self.first_name = employee.first_name
         self.last_name = employee.last_name
         self.save()
-        return self
 
     def delete(self):
         with DBSession() as db_session:
@@ -143,28 +136,23 @@ class Employee(DBase):
     @classmethod
     def get_by_id(cls, pk):
         with DBSession() as db_session:
-            result = db_session.query(cls).get(pk)
-            return result
+            return db_session.query(cls).get(pk)
 
     def add_skill(self, skill: ESkill):
         self.skills.append(skill)
         self.save()
-        return self
 
     def add_department(self, department: Department):
         self.department = department
         self.save()
-        return self
 
     def delete_department(self):
         self.department = None
         self.save()
-        return self
 
     def delete_skill(self, skill: ESkill):
         self.skills.remove(skill)
         self.save()
-        return self
 
     def check_department(self, department: Department) -> bool:
         return self.department == department

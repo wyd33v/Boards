@@ -37,7 +37,7 @@ class Department(DBase):
         with DBSession() as db_session:
             db_session.add(self)
             db_session.commit()
-        return self.id
+            return self.id
 
     def update(self, department: DepartmentSchema):
         self.name = department.name
@@ -48,19 +48,16 @@ class Department(DBase):
         with DBSession() as db_session:
             db_session.delete(self)
             db_session.commit()
-        pass
 
     @classmethod
     def get_all(cls):
         with DBSession() as db_session:
-            result = db_session.query(cls).all()
-            return result
+            return db_session.query(cls).all()
 
     @classmethod
     def get_by_id(cls, pk):
         with DBSession() as db_session:
-            result = db_session.query(cls).get(pk)
-            return result
+            return db_session.query(cls).get(pk)
 
     @classmethod
     def get_by_name(cls, name: str):

@@ -16,7 +16,7 @@ from models.employee import Employee, EmployeeSkills, ESkill
 def test_db(name="test_db", scope="function"):
     print("test db up")
     db_engine = sa.create_engine("sqlite://")
-    DBSession.configure(bind=db_engine)
+    DBSession.configure(bind=db_engine, expire_on_commit=False)
     DBase.metadata.create_all(db_engine)
     try:
         yield

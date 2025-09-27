@@ -60,14 +60,13 @@ def test_delete_ok(test_db):
 def test_add_skill(test_db):
     # given
     skill_name = 'testing skill'
-    e = Employee(fname='testname', lname='testlast')
-    s = ESkill(skill_name=skill_name)
-    s.save()
-    e_id = e.save()
+    skill_id = ESkill(skill_name=skill_name).save()
+    skill = ESkill.get_by_id(skill_id)
+    empl_id = Employee(fname='testname', lname='testlast').save()
     # when
-    e = e.get_by_id(e_id)
-    e.add_skill(s)
+    employee = Employee.get_by_id(empl_id)
+    employee.add_skill(skill)
     # then
-    assert e.id > 0
-    assert len(e.skills) > 0
-    assert e.skills[0].name == skill_name
+    assert employee.id > 0
+    assert len(employee.skills) > 0
+    assert employee.skills[0].name == skill_name
