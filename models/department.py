@@ -42,7 +42,6 @@ class Department(DBase):
     def update(self, department: DepartmentSchema):
         self.name = department.name
         self.save()
-        return self
 
     def delete(self):
         with DBSession() as db_session:

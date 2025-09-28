@@ -8,3 +8,7 @@
 
 __pycache__/
 data/db.sqlite
+
+# Coverage directory used by tools like istanbul
+coverage/
+.coverage
