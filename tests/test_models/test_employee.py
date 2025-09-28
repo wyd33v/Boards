@@ -47,24 +47,27 @@ def test_update_ok(test_db):
     assert e.last_name == e_schema.last_name
 
 
-def test_delete_ok(test_db):
+def test_delete_ok(test_db, test_client):
     # given
     e = Employee(fname='testname', lname='testlast')
     # when
     prev_id = e.save()
     # then
     e.delete()
+    print(test_client)
     find_id = Employee.get_by_id(prev_id)
     assert find_id is None
+
 
 def test_add_skill(test_db):
     # given
     skill_name = 'testing skill'
     skill_id = ESkill(skill_name=skill_name).save()
     skill = ESkill.get_by_id(skill_id)
-    empl_id = Employee(fname='testname', lname='testlast').save()
+    # empl_id = Employee(fname='testname', lname='testlast').save()
     # when
-    employee = Employee.get_by_id(empl_id)
+    # employee = Employee.get_by_id(empl_id)
+    employee = Employee(fname='testname', lname='testlast')
     employee.add_skill(skill)
     # then
     assert employee.id > 0

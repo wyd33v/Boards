@@ -1,4 +1,4 @@
-# global test settings 
+# global test settings
 # fixtures, etc
 
 from unittest.mock import patch
@@ -10,6 +10,15 @@ from sqlalchemy.orm import Session, declarative_base
 from models.base import DBase, DBSession
 from models.department import Department
 from models.employee import Employee, EmployeeSkills, ESkill
+from fastapi.testclient import TestClient
+
+from app import app
+
+
+@pytest.fixture()
+def test_client(name="test_client", scope="function"):
+    client = TestClient(app)
+    return client
 
 
 @pytest.fixture()
