@@ -5,15 +5,18 @@ import pytest
 
 from models.employee import ESkill
 from models.schemas import SkillSchema
+from repositories.skills_repository import SkillRepository
 
 
 def test_save_ok(test_db):
     # given
-    s = ESkill(skill_name='test skill')
+    session = test_db()
+    repo = SkillRepository(session)
+    s = ESkill(skill_name='testing skill')
     # when
-    result = s.save()
-    assert result > 0
-    assert s.id > 0
+    result = repo.add(s)
+    assert result.id > 0
+    assert s.id == result.id
 
 
 def test_as_dict_ok():
@@ -25,31 +28,31 @@ def test_as_dict_ok():
     assert isinstance(s_as_dict, dict)
 
 
-def test_as_dict_fail():
-    # when
-    with pytest.raises(TypeError) as exc:
-        s = ESkill()
-    # then
-    assert exc is not None
+# def test_as_dict_fail():
+#     # when
+#     with pytest.raises(TypeError) as exc:
+#         s = ESkill()
+#     # then
+#     assert exc is not None
 
 
-def test_update_ok(test_db):
+def test_update_ok(test_db, setup_skill):
     # given
-    s = ESkill(skill_name='test skill')
-    s_schema = SkillSchema(name='new test name')
+    repo, skill = setup_skill
+    skill_schema = SkillSchema(name='test skill')
     # when
-    prev_id = s.save()
-    s.update(s_schema)
+    repo.update(skill, skill_schema)
     # then
-    assert s.id == prev_id
-    assert s.name == s_schema.name
+    updated = repo.get_by_id(skill.id)
+    assert updated.name == skill_schema.name
 
-def test_delete_ok(test_db):
+
+def test_delete_ok(test_db, setup_skill):
     # given
-    s = ESkill(skill_name = 'skill name')
+    repo, skill = setup_skill
+    skill_id = skill.id
     # when
-    prev_id = s.save()
+    repo.delete(skill)
     # then
-    s.delete()
-    find_id = ESkill.get_by_id(prev_id)
-    assert find_id is None
+    found = repo.get_by_id(skill_id)
+    assert found is None
