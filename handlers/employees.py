@@ -109,17 +109,12 @@ def employee_add_department(pk: int, department_pk: int, db: Session = Depends(g
     return employee.as_dict()
 
 
-@router.delete("/{pk}/department/{department_pk}", tags=["employee_department"])
-def employee_delete_department(pk: int, department_pk: int, db: Session = Depends(get_db)):
+@router.delete("/{pk}/department", tags=["employee_department"])
+def employee_delete_department(pk: int, db: Session = Depends(get_db)):
     employee_repo = EmployeeRepository(db)
     employee = employee_repo.get_by_id(pk)
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    department_repo = DepartmentRepository(db)
-    department = department_repo.get_by_id(department_pk)
-    if department is None:
-        raise HTTPException(status_code=404, detail="Department not found")
-
-    employee_repo.delete_department(employee, department)
+    employee_repo.delete_department(employee)
     return employee.as_dict()
