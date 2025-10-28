@@ -3,118 +3,138 @@ import json
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 
-from models.employee import Employee
+from services.deps_services import get_employee_service, get_skills_service, get_department_service
 from models.schemas import EmployeeSchema
-from models.deps import get_db
-from repositories.employee_repository import EmployeeRepository
-from repositories.skills_repository import SkillRepository
-from repositories.department_repository import DepartmentRepository
+from services.employee_service import EmployeeService
+from services.skills_service import SkillsService
+from services.department_service import DepartmentService
 
 router = APIRouter(prefix="/employees")
 
 
 @router.get("/", tags=["employees"])
-def get_employees(db: Session = Depends(get_db)):
-    repo = EmployeeRepository(db)
-    employees = repo.get_all()
+def get_employees(service: EmployeeService = Depends(get_employee_service)):
+    employees = service.get_all_employees()
     return [e.as_dict() for e in employees]
 
 
 @router.get("/{pk}", tags=["employees"])
-def get_employee(pk: int, db: Session = Depends(get_db)):
-    repo = EmployeeRepository(db)
-    employee = repo.get_by_id(pk)
-    if employee is None:
+def get_employee(pk: int, service: EmployeeService = Depends(get_employee_service)):
+    employee = service.get_employee(pk)
+    if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     return employee.as_dict()
 
 
 @router.post("/", tags=["employees"])
-def create_employee(employeeItem: EmployeeSchema, db: Session = Depends(get_db)):
-    repo = EmployeeRepository(db)
-    employee = Employee(
-        employeeItem.first_name,
-        employeeItem.last_name
-    )
-    repo.add(employee)
+def create_employee(employee_item: EmployeeSchema, service: EmployeeService = Depends(get_employee_service)):
+    employee = service.create_employee(employee_item)
     return employee.as_dict()
 
 
 @router.put("/{pk}", tags=["employees"])
-def update_employee(pk: int, employeeItem: EmployeeSchema, db: Session = Depends(get_db)):
-    repo = EmployeeRepository(db)
-    employee = repo.get_by_id(pk)
-    if employee is None:
+def update_employee(
+    pk: int,
+    employee_item: EmployeeSchema,
+    service: EmployeeService = Depends(get_employee_service)
+):
+    employee = service.update_employee(pk, employee_item)
+    if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
-
-    repo.update(employee, employeeItem)
     return employee.as_dict()
 
 
 @router.delete("/{pk}", tags=["employees"])
-def delete_employee(pk: int, db: Session = Depends(get_db)):
-    repo = EmployeeRepository(db)
-    employee = repo.get_by_id(pk)
-    if employee is None:
+def delete_employee(pk: int, service: EmployeeService = Depends(get_employee_service)):
+    result = service.delete_employee(pk)
+    if not result:
         raise HTTPException(status_code=404, detail="Employee not found")
-    repo.delete(employee)
-    return {"ok": True}
+    return result
 
 
 @router.post("/{pk}/skill/{skill_pk}", tags=["employee_skill"])
-def employee_add_skill(pk: int, skill_pk: int, db: Session = Depends(get_db)):
-    employee_repo = EmployeeRepository(db)
-    skills_repo = SkillRepository(db)
-    employee = employee_repo.get_by_id(pk)
+def employee_add_skill(
+    pk: int,
+    skill_pk: int,
+    skill_service: SkillsService = Depends(get_skills_service),
+    employee_service: EmployeeService = Depends(get_employee_service)
+):
+    employee = employee_service.get_employee(pk)
+    skill = skill_service.get_skill(skill_pk)
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    skill = skills_repo.get_by_id(skill_pk)
     if skill is None:
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    employee_repo.add_skill(employee, skill)
+    if skill in employee.skills:
+        return employee.as_dict()
+
+    employee = employee_service.add_skill_to_employee(employee, skill)
     return employee.as_dict()
 
 
 @router.delete("/{pk}/skill/{skill_pk}", tags=["employee_skill"])
-def employee_delete_skill(pk: int, skill_pk: int, db: Session = Depends(get_db)):
-    employee_repo = EmployeeRepository(db)
-    skills_repo = SkillRepository(db)
-    employee = employee_repo.get_by_id(pk)
+def employee_delete_skill(
+    pk: int,
+    skill_pk: int,
+    skill_service: SkillsService = Depends(get_skills_service),
+    employee_service: EmployeeService = Depends(get_employee_service)
+):
+    employee = employee_service.get_employee(pk)
+    skill = skill_service.get_skill(skill_pk)
+
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    skill = skills_repo.get_by_id(skill_pk)
     if skill is None:
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    employee_repo.delete_skill(employee, skill)
+    employee = employee_service.remove_skill_from_employee(employee, skill)
     return employee.as_dict()
 
 
 @router.post("/{pk}/department/{department_pk}", tags=["employee_department"])
-def employee_add_department(pk: int, department_pk: int, db: Session = Depends(get_db)):
-    employee_repo = EmployeeRepository(db)
-    employee = employee_repo.get_by_id(pk)
+def employee_add_department(
+    pk: int,
+    department_pk: int,
+    department_service: DepartmentService = Depends(get_department_service),
+    employee_service: EmployeeService = Depends(get_employee_service)
+):
+    employee = employee_service.get_employee(pk)
+    department = department_service.get_department(department_pk)
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    department_repo = DepartmentRepository(db)
-    department = department_repo.get_by_id(department_pk)
     if department is None:
         raise HTTPException(status_code=404, detail="Department not found")
 
-    employee_repo.set_department(employee, department)
+    if employee.department == department:
+        return employee.as_dict()
+
+    employee = employee_service.set_department_for_employee(
+        employee, department)
     return employee.as_dict()
 
 
 @router.delete("/{pk}/department", tags=["employee_department"])
-def employee_delete_department(pk: int, db: Session = Depends(get_db)):
-    employee_repo = EmployeeRepository(db)
-    employee = employee_repo.get_by_id(pk)
+def employee_delete_department(
+    pk: int,
+    # department_pk: int,
+    # department_service: DepartmentService = Depends(get_department_service),
+    employee_service: EmployeeService = Depends(get_employee_service)
+):
+    employee = employee_service.get_employee(pk)
+    # department = department_service.get_department(department_pk)
+
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    employee_repo.delete_department(employee)
+    # if department is None:
+    #     raise HTTPException(status_code=404, detail="Department not found")
+
+    # if employee.department == department:
+    #     return employee.as_dict()
+
+    employee = employee_service.delete_department_from_employee(employee)
     return employee.as_dict()

@@ -7,7 +7,7 @@ from unittest import result
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column, registry, relationship
 
-from .base import DBase, DBSession
+from .base import DBase
 
 
 class ESkill(DBase):

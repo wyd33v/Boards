@@ -1,7 +1,7 @@
 from models.base import DBSession
 
 
-def get_db():
+def get_session():
     db = DBSession()
     try:
         yield db

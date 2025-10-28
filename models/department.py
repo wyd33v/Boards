@@ -5,7 +5,7 @@ A file that contains class of Department and everything related.
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from .base import DBase, DBSession
+from .base import DBase
 
 
 class Department(DBase):

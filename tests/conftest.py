@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from models.base import DBase, DBSession
 from fastapi.testclient import TestClient
-from models.deps import get_db
+from models.deps import get_session
 from app import app
 
 from models.employee import Employee, ESkill
@@ -77,14 +77,14 @@ def test_db():
 
     TestingSessionLocal = sessionmaker(bind=connection, expire_on_commit=False)
 
-    def override_get_db():
+    def override_get_session():
         db = TestingSessionLocal()
         try:
             yield db
         finally:
             db.close()
 
-    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_session] = override_get_session
 
     yield TestingSessionLocal
 
