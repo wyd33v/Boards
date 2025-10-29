@@ -1,5 +1,7 @@
-from typing import Generic, TypeVar, Type, Optional, List
+from typing import Generic, List, Optional, Type, TypeVar
+
 from sqlalchemy.orm import Session
+
 from models.base import DBase
 
 T = TypeVar("T", bound=DBase)
@@ -26,5 +28,7 @@ class Repository(Generic[T]):
     def get_by_id(self, pk: int) -> Optional[T]:
         return self.db.query(self.model).get(pk)
 
+    def get_by_param(self, **filters) -> Optional[T]:
+        return self.db.query(self.model).filter_by(**filters).one_or_none()
     def get_by_param(self, **filters) -> Optional[T]:
         return self.db.query(self.model).filter_by(**filters).one_or_none()

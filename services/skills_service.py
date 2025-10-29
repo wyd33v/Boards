@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from models.employee import ESkill, Employee
+from data.repository import Repository
+from models.employee import Employee, ESkill
 from models.schemas import SkillSchema
-from repositories.repository import Repository
 
 
 class SkillsService:

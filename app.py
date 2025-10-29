@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
-from handlers.skills import router as es_router
-from handlers.employees import router as em_router
 from handlers.departments import router as dep_router
+from handlers.employees import router as em_router
+from handlers.skills import router as es_router
+from models.base import db_engine
 
 app = FastAPI()
 
@@ -13,3 +14,8 @@ app.include_router(dep_router)
 @app.get("/")
 def root():
     return {"Hello": "World"}
+
+
+print()
+print("!!", db_engine.url)
+print()

@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-from models.employee import Employee, ESkill
+from data.repository import Repository
 from models.department import Department
+from models.employee import Employee, ESkill
 from models.schemas import EmployeeSchema
-from repositories.repository import Repository
 
 
 class EmployeeService:

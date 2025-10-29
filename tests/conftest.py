@@ -4,19 +4,14 @@
 from unittest.mock import patch
 
 import pytest
-import sqlalchemy as sa
-from sqlalchemy.orm import sessionmaker
-
-from models.base import DBase, DBSession
 from fastapi.testclient import TestClient
-from models.deps import get_session
-from app import app
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from models.employee import Employee, ESkill
+from app import app
+from models.base import DBase, DBSession, db_session
 from models.department import Department
-from repositories.employee_repository import EmployeeRepository
-from repositories.skills_repository import SkillRepository
-from repositories.department_repository import DepartmentRepository
+from models.employee import Employee, ESkill
 
 
 @pytest.fixture(scope="function")
@@ -67,26 +62,23 @@ def test_client(test_db, name="test_client", scope="function"):
 
 @pytest.fixture(scope="function")
 def test_db():
+    db_engine = create_engine("sqlite://", connect_args={"check_same_thread": False})
+    connection = db_engine.connect()
+    DBase.metadata.create_all(connection)
     print("test db up")
 
-    db_engine = sa.create_engine(
-        "sqlite://", connect_args={"check_same_thread": False})
-    connection = db_engine.connect()
+    def __test_db_session():
+        # db = TestingSessionLocal()
+        # try:
+        #     yield db
+        # finally:
+        #     db.close()
+        with Session(db_engine) as s:
+            yield s
 
-    DBase.metadata.create_all(connection)
+    app.dependency_overrides[db_session()] = __test_db_session
 
-    TestingSessionLocal = sessionmaker(bind=connection, expire_on_commit=False)
-
-    def override_get_session():
-        db = TestingSessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_session] = override_get_session
-
-    yield TestingSessionLocal
+    yield
 
     DBase.metadata.drop_all(connection)
     connection.close()

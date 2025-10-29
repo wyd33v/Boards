@@ -1,13 +1,14 @@
 import json
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from services.deps_services import get_employee_service, get_skills_service, get_department_service
 from models.schemas import EmployeeSchema
+from services import (get_department_service, get_employee_service,
+                      get_skills_service)
+from services.department_service import DepartmentService
 from services.employee_service import EmployeeService
 from services.skills_service import SkillsService
-from services.department_service import DepartmentService
 
 router = APIRouter(prefix="/employees")
 
@@ -137,4 +138,5 @@ def employee_delete_department(
     #     return employee.as_dict()
 
     employee = employee_service.delete_department_from_employee(employee)
+    return employee.as_dict()
     return employee.as_dict()

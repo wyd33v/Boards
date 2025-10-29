@@ -1,12 +1,12 @@
 import json
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from services.deps_services import get_skills_service, get_employee_service
 from models.schemas import SkillSchema
-from services.skills_service import SkillsService
+from services import get_employee_service, get_skills_service
 from services.employee_service import EmployeeService
+from services.skills_service import SkillsService
 
 router = APIRouter(prefix="/skills")
 

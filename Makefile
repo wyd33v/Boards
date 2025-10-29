@@ -5,11 +5,11 @@ run:
 	fastapi dev app.py
 
 migrate:
-	alembic upgrade head
+	alembic -c ./data/alembic.ini upgrade head
 
 revision:
 ifdef name
-	alembic revision --autogenerate -m $(name)
+	alembic -c ./data/alembic.ini revision --autogenerate -m $(name)
 else
 	echo "No revision name provided! Repeat command and add name=<revision_name>"
 endif
@@ -22,6 +22,9 @@ coverage:
 
 coverage-html:
 	coverage run -m pytest -v && coverage html
+
+pyclean:
+	find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 
 # Docker
 docker-run:

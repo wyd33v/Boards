@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from services.deps_services import get_department_service
+
 from models.schemas import DepartmentSchema
+from services import get_department_service
 from services.department_service import DepartmentService
 
 router = APIRouter(prefix="/departments", tags=["departments"])

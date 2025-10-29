@@ -1,10 +1,8 @@
-from typing import List
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from data.repository import Repository
 from models.department import Department
 from models.schemas import DepartmentSchema
-from repositories.repository import Repository
 
 
 class DepartmentService:
@@ -40,4 +38,4 @@ class DepartmentService:
         if not department:
             return None
         self.repo.delete(department)
-        return {"ok": True}
+        return {"ok": True} #TODO
