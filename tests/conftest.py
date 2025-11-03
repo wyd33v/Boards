@@ -1,41 +1,56 @@
 # global test settings
 # fixtures, etc
-
-from unittest.mock import patch
-
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import MagicMock, patch
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
+from sqlalchemy.orm import sessionmaker
 from app import app
-from models.base import DBase, DBSession, db_session
-from models.department import Department
-from models.employee import Employee, ESkill
+from models.base import DBase, db_session
+from services.department_service import DepartmentService
+from services.employee_service import EmployeeService
+from services.skills_service import SkillsService
 
 
-@pytest.fixture(scope="function")
-def setup_employee(test_db):
-    session = test_db()
-    emp_repo = EmployeeRepository(session)
-    employee = emp_repo.add(Employee(fname="test fname", lname="test lname"))
-    return emp_repo, employee
+@pytest.fixture
+def fake_db():
+    return MagicMock()
 
 
-@pytest.fixture(scope="function")
-def setup_skill(test_db):
-    session = test_db()
-    skill_repo = SkillRepository(session)
-    skill = skill_repo.add(ESkill(skill_name="testing skill"))
-    return skill_repo, skill
+@pytest.fixture
+def mock_repo():
+    with patch("services.department_service.Repository") as mock_dept_repo_class, \
+            patch("services.employee_service.Repository") as mock_emp_repo_class, \
+            patch("services.skills_service.Repository") as mock_skills_repo_class:
+
+        mock_dept_repo = MagicMock()
+        mock_emp_repo = MagicMock()
+        mock_skills_repo = MagicMock()
+
+        mock_dept_repo_class.return_value = mock_dept_repo
+        mock_emp_repo_class.return_value = mock_emp_repo
+        mock_skills_repo_class.return_value = mock_skills_repo
+
+        yield {
+            "department": mock_dept_repo,
+            "employee": mock_emp_repo,
+            "skills": mock_skills_repo
+        }
 
 
-@pytest.fixture(scope="function")
-def setup_department(test_db):
-    session = test_db()
-    dept_repo = DepartmentRepository(session)
-    department = dept_repo.add(Department("ramp"))
-    return dept_repo, department
+@pytest.fixture
+def department_service(fake_db, mock_repo):
+    return DepartmentService(fake_db)
+
+
+@pytest.fixture
+def employee_service(fake_db, mock_repo):
+    return EmployeeService(fake_db)
+
+
+@pytest.fixture
+def skills_service(fake_db, mock_repo):
+    return SkillsService(fake_db)
 
 
 @pytest.fixture()
@@ -44,43 +59,28 @@ def test_client(test_db, name="test_client", scope="function"):
         yield client
 
 
-# @pytest.fixture()
-# def test_db(name="test_db", scope="function"):
-#     print("test db up")
-#     db_engine = sa.create_engine("sqlite://")
-#     TestingSessionLocal = sessionmaker(bind=db_engine, expire_on_commit=False)
-#     DBSession.configure(bind=db_engine, expire_on_commit=False)
-#     DBase.metadata.create_all(db_engine)
-
-#     try:
-#         yield
-#     finally:
-#         DBase.metadata.drop_all(db_engine)
-
-#         print("test db connection closed")
-
-
 @pytest.fixture(scope="function")
 def test_db():
-    db_engine = create_engine("sqlite://", connect_args={"check_same_thread": False})
-    connection = db_engine.connect()
-    DBase.metadata.create_all(connection)
-    print("test db up")
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+    )
 
-    def __test_db_session():
-        # db = TestingSessionLocal()
-        # try:
-        #     yield db
-        # finally:
-        #     db.close()
-        with Session(db_engine) as s:
-            yield s
+    TestingSessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
-    app.dependency_overrides[db_session()] = __test_db_session
+    DBase.metadata.create_all(bind=engine)
+    print("Test DB created")
 
-    yield
+    def override_db_session():
+        with TestingSessionLocal() as session:
+            yield session
 
-    DBase.metadata.drop_all(connection)
-    connection.close()
+    app.dependency_overrides[db_session] = override_db_session
+
+    db = TestingSessionLocal()
+    yield db
+
+    db.close()
+    DBase.metadata.drop_all(bind=engine)
     app.dependency_overrides.clear()
     print("test db connection closed")
