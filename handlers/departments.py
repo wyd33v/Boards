@@ -1,20 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from models.schemas import DepartmentSchema
-from services import get_department_service
-from services.department_service import DepartmentService
+from services import department_service, DepartmentService
 
 router = APIRouter(prefix="/departments", tags=["departments"])
 
 
 @router.get("/")
-def get_departments(service: DepartmentService = Depends(get_department_service)):
+def get_departments(service: DepartmentService = Depends(department_service)):
     departments = service.get_all_departments()
     return [d.as_dict() for d in departments]
 
 
 @router.get("/{pk}")
-def get_department(pk: int, service: DepartmentService = Depends(get_department_service)):
+def get_department(pk: int, service: DepartmentService = Depends(department_service)):
     department = service.get_department(pk)
     if not department:
         raise HTTPException(status_code=404, detail="Department not found")
@@ -33,7 +32,7 @@ def get_department(pk: int, service: DepartmentService = Depends(get_department_
 @router.post("/")
 def create_department(
     department_item: DepartmentSchema,
-    service: DepartmentService = Depends(get_department_service)
+    service: DepartmentService = Depends(department_service)
 ):
     department = service.create_department(department_item)
     return department.as_dict()
@@ -43,7 +42,7 @@ def create_department(
 def update_department(
     pk: int,
     department_item: DepartmentSchema,
-    service: DepartmentService = Depends(get_department_service)
+    service: DepartmentService = Depends(department_service)
 ):
     department = service.update_department(pk, department_item)
     if not department:
@@ -52,7 +51,7 @@ def update_department(
 
 
 @router.delete("/{pk}")
-def delete_department(pk: int, service: DepartmentService = Depends(get_department_service)):
+def delete_department(pk: int, service: DepartmentService = Depends(department_service)):
     result = service.delete_department(pk)
     if not result:
         raise HTTPException(status_code=404, detail="Department not found")

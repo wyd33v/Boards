@@ -1,11 +1,9 @@
 """
 A file that contains class of Employee and everything related.
 """
-import json
-from unittest import result
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import mapped_column, registry, relationship
+from sqlalchemy.orm import mapped_column, relationship
 
 from .base import DBase
 
@@ -20,7 +18,6 @@ class ESkill(DBase):
 
     def __init__(self, skill_name):
         self.name = skill_name
-        print("skill was created")
 
     def __repr__(self):
         return f"skill {self.id} {self.name}"
@@ -51,8 +48,7 @@ class Employee(DBase):
     def __init__(self, fname, lname):
         self.first_name = fname
         self.last_name = lname
-        print("employee was created")
-
+        
     def __repr__(self):
         return f"employee {self.id} {self.first_name} {self.first_name}"
 

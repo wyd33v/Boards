@@ -14,8 +14,3 @@ app.include_router(dep_router)
 @app.get("/")
 def root():
     return {"Hello": "World"}
-
-
-print()
-print("!!", db_engine.url)
-print()
