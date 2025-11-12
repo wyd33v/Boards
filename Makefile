@@ -36,4 +36,13 @@ docker-stop:
 docker-build:
 	docker build -t boards_i:latest .
 
+docker-up:
+	docker-compose up
+
+docker-down:
+	docker-compose down --remove-orphans
+
+up-cache:
+	docker-compose up cache
+
 
