@@ -41,9 +41,6 @@ isort-fix:
 bandit:
 	bandit -r .
 
-format:
-	black-clean ruff-fix isort-fix
-
 lint:
 	ruff check .
 	mypy .
