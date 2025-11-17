@@ -1,9 +1,14 @@
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from models.schemas import EmployeeSchema
-from services import (department_service,
-                      employee_service, skills_service, DepartmentService, EmployeeService, SkillsService)
+from services import (
+    DepartmentService,
+    EmployeeService,
+    SkillsService,
+    department_service,
+    employee_service,
+    skills_service,
+)
 
 router = APIRouter(prefix="/employees")
 
@@ -23,7 +28,9 @@ def get_employee(pk: int, service: EmployeeService = Depends(employee_service)):
 
 
 @router.post("/", tags=["employees"])
-def create_employee(employee_item: EmployeeSchema, service: EmployeeService = Depends(employee_service)):
+def create_employee(
+    employee_item: EmployeeSchema, service: EmployeeService = Depends(employee_service)
+):
     employee = service.create_employee(employee_item)
     return employee.as_dict()
 
@@ -32,7 +39,7 @@ def create_employee(employee_item: EmployeeSchema, service: EmployeeService = De
 def update_employee(
     pk: int,
     employee_item: EmployeeSchema,
-    service: EmployeeService = Depends(employee_service)
+    service: EmployeeService = Depends(employee_service),
 ):
     employee = service.update_employee(pk, employee_item)
     if not employee:
@@ -53,7 +60,7 @@ def employee_add_skill(
     pk: int,
     skill_pk: int,
     skill_service: SkillsService = Depends(skills_service),
-    employee_service: EmployeeService = Depends(employee_service)
+    employee_service: EmployeeService = Depends(employee_service),
 ):
     employee = employee_service.get_employee(pk)
     skill = skill_service.get_skill(skill_pk)
@@ -75,7 +82,7 @@ def employee_delete_skill(
     pk: int,
     skill_pk: int,
     skill_service: SkillsService = Depends(skills_service),
-    employee_service: EmployeeService = Depends(employee_service)
+    employee_service: EmployeeService = Depends(employee_service),
 ):
     employee = employee_service.get_employee(pk)
     skill = skill_service.get_skill(skill_pk)
@@ -95,7 +102,7 @@ def employee_add_department(
     pk: int,
     department_pk: int,
     department_service: DepartmentService = Depends(department_service),
-    employee_service: EmployeeService = Depends(employee_service)
+    employee_service: EmployeeService = Depends(employee_service),
 ):
     employee = employee_service.get_employee(pk)
     department = department_service.get_department(department_pk)
@@ -108,8 +115,7 @@ def employee_add_department(
     if employee.department == department:
         return employee.as_dict()
 
-    employee = employee_service.set_department_for_employee(
-        employee, department)
+    employee = employee_service.set_department_for_employee(employee, department)
     return employee.as_dict()
 
 
@@ -118,7 +124,7 @@ def employee_delete_department(
     pk: int,
     # department_pk: int,
     # department_service: DepartmentService = Depends(department_service),
-    employee_service: EmployeeService = Depends(employee_service)
+    employee_service: EmployeeService = Depends(employee_service),
 ):
     employee = employee_service.get_employee(pk)
     # department = department_service.get_department(department_pk)

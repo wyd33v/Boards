@@ -1,10 +1,9 @@
-import pytest
-from models.skills import Skill, ESkill
+from models.employee import ESkill
 from models.schemas import SkillSchema
 
 
 def test_get_all_skills(skills_service, mock_repo):
-    fake_skills = [Skill(name="Python"), Skill(name="Java")]
+    fake_skills = [ESkill(skill_name="Python"), ESkill(skill_name="Java")]
     mock_repo["skills"].get_all.return_value = fake_skills
 
     result = skills_service.get_all_skills()
@@ -16,7 +15,7 @@ def test_get_all_skills(skills_service, mock_repo):
 
 
 def test_get_skill_found(skills_service, mock_repo):
-    skill = Skill(name="Python")
+    skill = ESkill(skill_name="Python")
     mock_repo["skills"].get_by_id.return_value = skill
 
     result = skills_service.get_skill(1)
@@ -36,7 +35,7 @@ def test_get_skill_not_found(skills_service, mock_repo):
 
 def test_create_skill(skills_service, mock_repo):
     schema = SkillSchema(name="Go")
-    saved_skill = Skill(name="Go")
+    saved_skill = ESkill(skill_name="Go")
     mock_repo["skills"].save.return_value = saved_skill
 
     result = skills_service.create_skill(schema)
@@ -46,7 +45,7 @@ def test_create_skill(skills_service, mock_repo):
 
 
 def test_update_skill_found(skills_service, mock_repo):
-    existing = Skill(name="OldSkill")
+    existing = ESkill(skill_name="OldSkill")
     schema = SkillSchema(name="NewSkill")
     mock_repo["skills"].get_by_id.return_value = existing
     mock_repo["skills"].save.return_value = existing
@@ -70,7 +69,7 @@ def test_update_skill_not_found(skills_service, mock_repo):
 
 
 def test_delete_skill_found(skills_service, mock_repo):
-    existing = Skill(name="DeleteMe")
+    existing = ESkill(skill_name="DeleteMe")
     mock_repo["skills"].get_by_id.return_value = existing
 
     result = skills_service.delete_skill(1)

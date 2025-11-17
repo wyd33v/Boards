@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from models.schemas import DepartmentSchema
-from services import department_service, DepartmentService
+from services import DepartmentService, department_service
 
 router = APIRouter(prefix="/departments", tags=["departments"])
 
@@ -32,7 +32,7 @@ def get_department(pk: int, service: DepartmentService = Depends(department_serv
 @router.post("/")
 def create_department(
     department_item: DepartmentSchema,
-    service: DepartmentService = Depends(department_service)
+    service: DepartmentService = Depends(department_service),
 ):
     department = service.create_department(department_item)
     return department.as_dict()
@@ -42,7 +42,7 @@ def create_department(
 def update_department(
     pk: int,
     department_item: DepartmentSchema,
-    service: DepartmentService = Depends(department_service)
+    service: DepartmentService = Depends(department_service),
 ):
     department = service.update_department(pk, department_item)
     if not department:
@@ -51,7 +51,9 @@ def update_department(
 
 
 @router.delete("/{pk}")
-def delete_department(pk: int, service: DepartmentService = Depends(department_service)):
+def delete_department(
+    pk: int, service: DepartmentService = Depends(department_service)
+):
     result = service.delete_department(pk)
     if not result:
         raise HTTPException(status_code=404, detail="Department not found")

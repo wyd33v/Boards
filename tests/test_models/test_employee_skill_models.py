@@ -1,6 +1,5 @@
-import pytest
-from models.employee import Employee, ESkill
 from models.department import Department
+from models.employee import Employee, ESkill
 
 # ----------------------------
 # Tests for ESkill
@@ -14,7 +13,7 @@ def test_eskill_init_and_attributes():
     assert skill.id is None
 
 
-def test_eskill_repr_and_str(monkeypatch):
+def test_eskill_repr_and_str():
     skill = ESkill("Java")
     skill.id = 1
 
@@ -28,6 +27,7 @@ def test_eskill_as_dict():
 
     expected = {"id": 5, "name": "Go"}
     assert skill.as_dict() == expected
+
 
 # ----------------------------
 # Tests for Employee
@@ -47,7 +47,7 @@ def test_employee_init_and_attributes():
 def test_employee_repr_and_str():
     emp = Employee("Jane", "Smith")
     emp.id = 1
-    emp.skills = []  # empty skills
+    emp.skills = []
 
     assert repr(emp) == "employee 1 Jane Jane"
     assert str(emp) == "Jane Smith []"
@@ -71,14 +71,12 @@ def test_employee_as_dict():
     # when
     emp_as_dict = emp.as_dict()
 
-    # convert department to dict for testing
     if emp_as_dict["department"]:
         emp_as_dict["department"] = {
             "id": emp_as_dict["department"].id,
-            "name": emp_as_dict["department"].name
+            "name": emp_as_dict["department"].name,
         }
 
-    # now we can test
     assert isinstance(emp_as_dict, dict)
     assert emp_as_dict["id"] == 10
     assert emp_as_dict["first_name"] == "Alice"

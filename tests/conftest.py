@@ -1,15 +1,16 @@
 # global test settings
 # fixtures, etc
+from unittest.mock import MagicMock, patch
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app import app
+from handlers import departments, employees, skills
 from models.base import DBase, db_session
-from services.department_service import DepartmentService
-from services.employee_service import EmployeeService
-from services.skills_service import SkillsService
+from services import DepartmentService, EmployeeService, SkillsService
 
 
 @pytest.fixture
@@ -19,10 +20,11 @@ def fake_db():
 
 @pytest.fixture
 def mock_repo():
-    with patch("services.department_service.Repository") as mock_dept_repo_class, \
-            patch("services.employee_service.Repository") as mock_emp_repo_class, \
-            patch("services.skills_service.Repository") as mock_skills_repo_class:
-
+    with (
+        patch("services.department_service.Repository") as mock_dept_repo_class,
+        patch("services.employee_service.Repository") as mock_emp_repo_class,
+        patch("services.skills_service.Repository") as mock_skills_repo_class,
+    ):
         mock_dept_repo = MagicMock()
         mock_emp_repo = MagicMock()
         mock_skills_repo = MagicMock()
@@ -34,8 +36,32 @@ def mock_repo():
         yield {
             "department": mock_dept_repo,
             "employee": mock_emp_repo,
-            "skills": mock_skills_repo
+            "skills": mock_skills_repo,
         }
+
+
+@pytest.fixture
+def mock_employee_service():
+    mock = MagicMock()
+    app.dependency_overrides[employees.employee_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.pop(employees.employee_service, None)
+
+
+@pytest.fixture
+def mock_skill_service():
+    mock = MagicMock()
+    app.dependency_overrides[skills.skills_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.pop(skills.skills_service, None)
+
+
+@pytest.fixture
+def mock_department_service():
+    mock = MagicMock()
+    app.dependency_overrides[departments.department_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.pop(departments.department_service, None)
 
 
 @pytest.fixture

@@ -1,11 +1,13 @@
-from models.employee import Employee, ESkill
 from models.department import Department
+from models.employee import Employee, ESkill
 from models.schemas import EmployeeSchema
 
 
 def test_get_all_employees(employee_service, mock_repo):
-    fake_employees = [Employee(fname="name1", lname="sur1"), Employee(
-        fname="name2", lname="sur2")]
+    fake_employees = [
+        Employee(fname="name1", lname="sur1"),
+        Employee(fname="name2", lname="sur2"),
+    ]
     mock_repo["employee"].get_all.return_value = fake_employees
 
     result = employee_service.get_all_employees()
@@ -17,8 +19,7 @@ def test_get_all_employees(employee_service, mock_repo):
 
 
 def test_get_employee_found(employee_service, mock_repo):
-    mock_repo["employee"].get_by_id.return_value = Employee(
-        fname="name1", lname="sur1")
+    mock_repo["employee"].get_by_id.return_value = Employee(fname="name1", lname="sur1")
 
     result = employee_service.get_employee(1)
 

@@ -5,8 +5,10 @@ from models.schemas import DepartmentSchema
 
 def test_get_all_departments(department_service, mock_repo):
     # given
-    fake_departments = [Department(
-        department_name="dep1"), Department(department_name="dep2")]
+    fake_departments = [
+        Department(department_name="dep1"),
+        Department(department_name="dep2"),
+    ]
     mock_repo["department"].get_all.return_value = fake_departments
 
     # when

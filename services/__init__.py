@@ -1,4 +1,5 @@
 from models.base import db_session
+
 from .department_service import DepartmentService
 from .employee_service import EmployeeService
 from .skills_service import SkillsService

@@ -14,7 +14,8 @@ class ESkill(DBase):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     employees = relationship(
-        "Employee", secondary='employee_skills', back_populates='skills')
+        "Employee", secondary="employee_skills", back_populates="skills"
+    )
 
     def __init__(self, skill_name):
         self.name = skill_name
@@ -40,15 +41,13 @@ class Employee(DBase):
     first_name = Column(String)
     last_name = Column(String)
     department_id = mapped_column(ForeignKey("departments.id"))
-    department = relationship(
-        "Department", back_populates="employees", lazy="subquery")
-    skills = relationship(
-        "ESkill", secondary='employee_skills', lazy='immediate')
+    department = relationship("Department", back_populates="employees", lazy="subquery")
+    skills = relationship("ESkill", secondary="employee_skills", lazy="immediate")
 
     def __init__(self, fname, lname):
         self.first_name = fname
         self.last_name = lname
-        
+
     def __repr__(self):
         return f"employee {self.id} {self.first_name} {self.first_name}"
 
@@ -70,8 +69,8 @@ class EmployeeSkills(DBase):
     __tablename__ = "employee_skills"
 
     id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employees.id'))
-    skill_id = Column(Integer, ForeignKey('eskills.id'))
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    skill_id = Column(Integer, ForeignKey("eskills.id"))
 
 
 # class EmployeeDepartment(DBase):

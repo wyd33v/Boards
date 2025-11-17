@@ -6,7 +6,6 @@ from models.schemas import SkillSchema
 
 
 class SkillsService:
-
     def __init__(self, db: Session):
         self.repo = Repository(ESkill, db)
 

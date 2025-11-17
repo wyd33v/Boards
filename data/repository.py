@@ -30,5 +30,3 @@ class Repository(Generic[T]):
 
     def get_by_param(self, **filters) -> Optional[T]:
         return self.db.query(self.model).filter_by(**filters).one_or_none()
-    def get_by_param(self, **filters) -> Optional[T]:
-        return self.db.query(self.model).filter_by(**filters).one_or_none()

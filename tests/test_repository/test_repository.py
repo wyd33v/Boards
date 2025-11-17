@@ -1,7 +1,6 @@
 from data.repository import Repository
 from models.department import Department
-from models.employee import Employee
-from models.employee import ESkill
+from models.employee import Employee, ESkill
 
 
 def test_department_crud(test_db):
@@ -40,7 +39,7 @@ def test_employee_crud(test_db):
     assert found.first_name == "emp1"
     assert found.last_name == "forename"
 
-    found_by_param = repo.get_by_param(first_name="John", last_name="forename")
+    found_by_param = repo.get_by_param(first_name="emp1", last_name="forename")
     assert found_by_param.id == saved.id
 
     all_emps = repo.get_all()

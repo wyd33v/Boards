@@ -6,7 +6,6 @@ from models.schemas import DepartmentSchema
 
 
 class DepartmentService:
-
     def __init__(self, db: Session):
         self.repo = Repository(Department, db)
 
@@ -38,4 +37,4 @@ class DepartmentService:
         if not department:
             return None
         self.repo.delete(department)
-        return {"ok": True} #TODO
+        return {"ok": True}  # TODO

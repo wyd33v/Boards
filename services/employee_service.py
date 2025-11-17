@@ -7,7 +7,6 @@ from models.schemas import EmployeeSchema
 
 
 class EmployeeService:
-
     def __init__(self, db: Session):
         self.repo = Repository(Employee, db)
 
@@ -22,8 +21,9 @@ class EmployeeService:
         return employee
 
     def create_employee(self, employee_item: EmployeeSchema):
-        employee = Employee(fname=employee_item.first_name,
-                            lname=employee_item.last_name)
+        employee = Employee(
+            fname=employee_item.first_name, lname=employee_item.last_name
+        )
         saved = self.repo.save(employee)
         return saved
 
@@ -53,7 +53,9 @@ class EmployeeService:
         self.repo.save(employee)
         return employee
 
-    def set_department_for_employee(self, employee: Employee, department: Department) -> Employee:
+    def set_department_for_employee(
+        self, employee: Employee, department: Department
+    ) -> Employee:
         employee.department = department
         self.repo.save(employee)
         return employee
