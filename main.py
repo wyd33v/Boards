@@ -2,14 +2,6 @@
 """
 * read about docker-compose networks.
 
-1. Clean up code: Comments, unused imports(* use lib): python black, pylint, ...
-1.1. Add make command or make some pre-commit hook (git hooks)
-
-
-2. Adjust unit tests to match new module structure: handlers.
-
-
-
 3. Add background tasks
 
 --------------------------
