@@ -6,14 +6,10 @@ skip-string-normalization = false
 [tool.isort]
 profile = "black"
 line_length = 88
-known_first_party = ["your_package_name"]  # replace with your package
+known_first_party = [ "handlers", "models", "services"]
 
 [tool.ruff]
 line-length = 88
 target-version = "py310"
-extend-select = ["E", "F", "W", "C90"]  # feel free to adjust
+lint.extend-select = ["E", "F", "W", "C90"]
 exclude = ["__pycache__", "build", "dist", ".venv", "venv"]
-
-[tool.mypy]
-python_version = 3.10
-ignore_missing_imports = true

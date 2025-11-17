@@ -41,10 +41,6 @@ isort-fix:
 bandit:
 	bandit -r .
 
-lint:
-	ruff check .
-	mypy .
-
 precommit-clean:
 	pre-commit clean
 
