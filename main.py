@@ -1,13 +1,14 @@
 # TODO:
 """
-* read about docker-compose networks.
+1 read about docker networks again.
+2. Add test coverage for cache_service.py (read todo).
 
-3. Add background tasks
+* inspect MQTT as a message broker
+3. Add message broker service in docker-compose (same way as cache service is added)
 
---------------------------
-4. Message brokers
+4. Add Broker service in the app (same way as cache_service)
 
-
+5. Write simple worker which uses message broker event and puts some result in cache 
 
 """
 
